@@ -46,7 +46,8 @@ export class LoginPage extends BasePage {
         async controlEntirePage(numberOfDiffPixelRatio:number):Promise<void>{
             await this.loginButton.waitFor(); //wait button is displayed
             const browserName = process.env.BROWSER; //catch the browser name as image may vary versus browser
-            const imagePath = `./logo_ref/Login_page_${browserName}.png`; //path to the image reference
+            const headless = process.env.HEADLESS;
+            const imagePath = `./logo_ref/Login_page_${browserName}_headless_${headless}.png`; //path to the image reference
         
         const pixelDiff = await this.getPixelDiff(imagePath, this.page);
         try {
