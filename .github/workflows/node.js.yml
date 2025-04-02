@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
+  schedule:
+    # Cette expression cron exécute le workflow tous les jours à 00:00 UTC (minuit)
+    - cron: '0 0 * * *'  # Exécution tous les jours à minuit UTC
+    
 
 jobs:
   build:
