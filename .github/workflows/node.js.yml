@@ -64,7 +64,8 @@ jobs:
         if: always()  # Cette étape sera exécutée même si les tests échouent
         uses: dawidd6/action-send-mail@v3
         with:
-          to: 'your-email@example.com'
+          from: 'delplanquecyr@yahoo.fr'
+          to: 'delplanquecyr@yahoo.fr'
           subject: 'CI Workflow Report'
           body: 'The CI workflow has completed. Please find the details of the report below.'
           attachments: 'reports/cucumber_report_chromium.html'  # Spécifiez le chemin du fichier de rapport
