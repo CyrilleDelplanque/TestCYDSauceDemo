@@ -62,7 +62,7 @@ jobs:
           npm test
       - name: Send email with the test report
         if: always()  # Cette étape sera exécutée même si les tests échouent
-        uses: mattmccutchen/send-email@v1
+        uses: dawidd6/action-send-mail@v3
         with:
           to: 'your-email@example.com'
           subject: 'CI Workflow Report'
