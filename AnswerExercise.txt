@@ -1,0 +1,24 @@
+
+Documentation:
+Document your tests using Gherkin syntax.
+Clearly describe the scenarios you are testing.
+
+
+Gherkin Scenarios: Submit the Gherkin scenarios that correspond to
+your test scripts. These should be comprehensive and cover all the key
+functionalities you have tested.
+
+Technical Test for QA Engineer Position 2
+
+Bug and Improvement Reports: If you encounter any bugs or issues
+during testing, document them clearly. Additionally, provide
+suggestions for potential improvements to the website.
+
+What We’re Looking For:
+Your ability to independently determine the critical areas for testing.
+The thoroughness and coverage of your tests.
+The clarity and accuracy of your Gherkin documentation.
+Your ability to identify edge cases and potential risks.
+
+Improvement:
+- Site shoud indicate/display who is logged in

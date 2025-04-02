@@ -1,0 +1,32 @@
+{
+    "Martine":
+    {
+        "name": "standard_user",
+        "password": "secret_sauce"
+    },
+    "Lucien":
+    {
+        "name": "locked_out_user",
+        "password": "secret_sauce"
+    },
+    "Pierre":
+    {
+        "name": "problem_user",
+        "password": "secret_sauce"
+    },
+    "Paul":
+    {
+        "name": "performance_glitch_user",
+        "password": "secret_sauce"
+    },
+    "Cyrille":
+    {
+        "name": "error_user",
+        "password": "secret_sauce"
+    },
+    "Lolita":
+    {
+        "name": "visual_user",
+        "password": "secret_sauce"
+    }
+}

@@ -1,0 +1,48 @@
+{
+    "buttonBurgerMenu" : "#react-burger-menu-btn",
+    "logoutSelection": "#logout_sidebar_link",
+    "productsPageHeader": "#header_container",
+    "headerMainTitle": ".app_logo",
+    "headerMainTitleTextReference": "Swag Labs",
+    "pageTitle": ".title",
+    "pageTitleTextReference": "Products",
+    "burgerMenu": ".bm-menu-wrap",
+    "burgerItemList": "xpath=//nav[@class='bm-item-list']/a",
+    "logoutText": "Logout",
+    "buttonBurgerMenuClose": "#react-burger-cross-btn",
+    "buttonSorting": "xpath=//select[@data-test='product-sort-container']",
+    "sortOption":{
+                "listDisplayed":"xpath=//select[@data-test='product-sort-container']/option",
+                "sortingByNameAscending":
+                    {
+                        "name":"Name (A to Z)",
+                        "value":"az"
+                    },
+                "sortingByNameDescending":
+                    {
+                        "name":"Name (Z to A)",
+                        "value":"za"
+                    },
+                "sortingByPriceAscending":
+                    {
+                        "name":"Price (low to high)",
+                        "value":"lohi"
+                    },
+                "sortingByPriceDescending":
+                    {
+                        "name":"Price (high to low)",
+                        "value":"hilo"
+                    }
+                },
+    "buttonBasket":"#shopping_cart_container",
+    "inventoryList": "xpath=//div[@data-test='inventory-list']",
+    "inventoryItem": "xpath=//div[@data-test='inventory-item']",
+    "inventoryImg": "xpath=//a[contains(@id,'img_link')]/img",
+    "inventoryItemTitle": "xpath=//a[contains(@id,'title_link')]",
+    "inventoryItemDescription": "xpath=//div[@data-test='inventory-item-desc']",
+    "inventoryItemPrice": "xpath=//div[@data-test='inventory-item-price']",
+    "buttonItemAddToCart": "xpath=//button[contains(@id,'add-to-cart')]",
+    "buttonItemRemoveFromCart": "xpath=//button[contains(@id,'remove')]",
+    "shoppingCart": "xpath=//span[@data-test='shopping-cart-link']",
+    "cartNumberOfItem":"xpath=//span[@data-test='shopping-cart-badge']"
+}

@@ -1,0 +1,30 @@
+{
+  "name": "playwright_test_vertuoza",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node runTest.js",
+    "test:chromium": "cross-env BROWSER=chromium node runTest.js",
+    "test:firefox": "cross-env BROWSER=firefox node runTest.js",
+    "test:webkit": "cross-env BROWSER=webkit node runTest.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^22.13.14",
+    "@types/pngjs": "^6.0.5",
+    "pixelmatch": "^7.1.0",
+    "pngjs": "^7.0.0"
+  },
+  "dependencies": {
+    "@cucumber/cucumber": "^11.2.0",
+    "cross-env": "^7.0.3",
+    "cucumber-html-reporter": "^6.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}

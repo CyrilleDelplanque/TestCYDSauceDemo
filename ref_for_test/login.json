@@ -1,0 +1,8 @@
+{
+    "loginPageUsername": "#user-name",
+    "loginPagePassword": "#password",
+    "loginButton": "#login-button",
+    "loginTextOfLoginButton" : "Login",
+    "loginErrorFrame": ".error-message-container.error",
+    "loginErrorMessage": "xpath=//h3[@data-test='error']"
+}

@@ -1,0 +1,6 @@
+{
+    "urlDefault": "https://www.saucedemo.com/",
+    "screenshotPath": "./screenshots/",
+    "screenshotExtn": ".png",
+    "delayBetweenKeyPress": 100
+}

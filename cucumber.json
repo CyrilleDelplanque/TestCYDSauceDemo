@@ -1,0 +1,37 @@
+{
+    "defaultTimeout": 10000,
+    "default": {
+    
+        "paths": ["features/"],
+    
+        "require": ["steps/**/*.ts","pages/*.ts"],
+
+        "requireModule": ["ts-node/register"],
+
+        "formatOptions": {   
+            "snippetInterface": "async-await"
+                        },
+    
+        "format": [
+    
+                    [
+    
+                    "html",
+    
+                    "cucumber-report.html"
+    
+                    ],
+    
+            "summary",
+    
+            "progress-bar",
+    
+            "json:./cucumber-report.json"
+    
+                ],
+            "parallel":1
+    
+            }
+    
+    
+    }
