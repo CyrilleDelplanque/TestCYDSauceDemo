@@ -67,7 +67,7 @@ jobs:
 
       # Step: Save reports as an artifact
       - name: Upload Cucumber HTML Report as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cucumber-reports  # Nom de l'artefact
           path: reports/cucumber_report_chromium_*.html  # Chemin du fichier généré
