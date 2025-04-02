@@ -83,18 +83,23 @@ jobs:
           path: reports/cucumber_report_*.html  # Chemin du fichier généré
           
       - name: Send email with the test report
-        if: always()  # Cette étape sera exécutée même si les tests échouent
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.mail.yahoo.com  # Serveur SMTP de Yahoo
-          server_port: 465  # Port SMTP pour Yahoo (465 pour SSL, ou 587 pour TLS)
-          username: ${{ secrets.YAHOO_EMAIL }}  # Utilisez un secret pour stocker votre email
-          password: ${{ secrets.YAHOO_PASSWORD }}  # Utilisez un secret pour stocker votre mot de passe
-          secure: true  # Utilisez true pour activer la sécurité (SSL/TLS)
-          subject: "CI Build Result"
-          to: delplanquecyr@yahoo.fr  # Adresse email du destinataire
-          from: ${{ secrets.YAHOO_EMAIL }}  # Utilisez votre email Yahoo comme expéditeur
-          body: "Le test a été effectué. Voir les résultats ci-joints."
-          html_body: "<h1>Résultats du test</h1><p>Voir les détails ci-dessous...</p>"
-          cc: ""  # Optionnel : adresse email en copie
-          bcc: ""  # Optionnel : adresse email en copie cachée
+  if: always()  # Cette étape sera exécutée même si les tests échouent
+  uses: dawidd6/action-send-mail@v3
+  with:
+    server_address: smtp.mail.yahoo.com
+    server_port: 465
+    username: ${{ secrets.YAHOO_EMAIL }}
+    password: ${{ secrets.YAHOO_PASSWORD }}
+    secure: true
+    subject: "CI Build Result"
+    to: delplanquecyr@yahoo.fr
+    from: ${{ secrets.YAHOO_EMAIL }}
+    body: "Le test a été effectué. Voir les résultats ci-joints."
+    html_body: "<h1>Résultats du test</h1><p>Voir les détails ci-dessous...</p>"
+    cc: ""
+    bcc: ""
+    # Ajoutez cette ligne pour inclure vos rapports de test
+    attachments: ./reports/cucumber_report_*.html,./reports/cucumber_report_*.json
+    # Si vous souhaitez inclure d'autres informations
+    ignore_cert: true  # Optionnel: peut aider avec certains problèmes de certificat
+    priority: high      # Optionnel: définit la priorité de l'email
