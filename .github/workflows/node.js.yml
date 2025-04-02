@@ -1,0 +1,100 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+  schedule:
+    # Cette expression cron exécute le workflow tous les jours à 00:00 UTC (minuit)
+    - cron: '0 0 * * *'  # Exécution tous les jours à minuit UTC
+    
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest] 
+        node-version: [22.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          
+      - name: Show Node.js version
+        run: node -v  # Affiche la version de Node.js dans l'environnement CI
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          npm ci
+          
+      # Initialize Playwright
+      - name: Initialize Playwright
+        run: |
+          npm init playwright@latest --yes
+
+      # Install Playwright dependencies
+      - name: Install Playwright browsers
+        run: |
+          npx playwright install --with-deps
+
+      # Install Cucumber and related packages
+      - name: Install Cucumber and Playwright-related packages
+        run: |
+          npm install @cucumber/cucumber
+          npm install cucumber-html-reporter
+          npm install pixelmatch pngjs
+          npm install cross-env
+          npm install ts-node typescript
+
+      # Run tests (Cucumber and Playwright tests)
+      - name: Run tests
+        run: |
+          if [ "$OSTYPE" == "linux-gnu" ]; then
+              export HEADLESS=true
+              echo "Running on Linux, HEADLESS=true"
+          elif [ -n "$WINDIR" ]; then
+              echo "Running on Windows, HEADLESS=true"
+              echo "##vso[task.setvariable variable=HEADLESS]true"  # Pour Azure DevOps si besoin
+          else
+              echo "Unknown OS, please specify HEADLESS manually"
+          fi
+          echo "HEADLESS=$HEADLESS"
+          npm test
+
+      # Liste des fichiers dans le répertoire de rapports pour déboguer
+      - name: List files in reports directory
+        run: ls -al reports/
+
+      # Step: Save reports as an artifact
+      - name: Upload Cucumber HTML Report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-reports  # Nom de l'artefact
+          path: reports/cucumber_report_chromium_*.html  # Chemin du fichier généré
+          
+      - name: Send email with the test report
+        if: always()  # Cette étape sera exécutée même si les tests échouent
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.mail.yahoo.com  # Serveur SMTP de Yahoo
+          server_port: 465  # Port SMTP pour Yahoo (465 pour SSL, ou 587 pour TLS)
+          username: ${{ secrets.YAHOO_EMAIL }}  # Utilisez un secret pour stocker votre email
+          password: ${{ secrets.YAHOO_PASSWORD }}  # Utilisez un secret pour stocker votre mot de passe
+          secure: true  # Utilisez true pour activer la sécurité (SSL/TLS)
+          subject: "CI Build Result"
+          to: delplanquecyr@yahoo.fr  # Adresse email du destinataire
+          from: ${{ secrets.YAHOO_EMAIL }}  # Utilisez votre email Yahoo comme expéditeur
+          body: "Le test a été effectué. Voir les résultats ci-joints."
+          html_body: "<h1>Résultats du test</h1><p>Voir les détails ci-dessous...</p>"
+          cc: ""  # Optionnel : adresse email en copie
+          bcc: ""  # Optionnel : adresse email en copie cachée
