@@ -89,51 +89,7 @@ jobs:
 
       - name: Extract report statistics
         id: extract-stats
-        run: |
-          node -e "
-          const fs = require('fs');
-          const glob = require('glob');
-          const cheerio = require('cheerio');
-            
-          // Recherche tous les fichiers de rapport HTML
-          const reportFiles = glob.sync('./reports/cucumber_report_*.html');
-            
-          let combinedStats = '';
-            
-          // Pour chaque fichier de rapport
-          reportFiles.forEach(file => {
-            const browser = file.match(/cucumber_report_(.+)\.html/)[1];
-            const htmlContent = fs.readFileSync(file, 'utf8');
-              
-          // Utilise cheerio (version Node.js de jQuery) pour analyser le HTML
-            const $ = cheerio.load(htmlContent);
-              
-          // Trouve toutes les divs dont la classe commence par 'count-wrapper'
-            const countWrappers = $('div[class^=\"count-wrapper\"]');
-              
-          if (countWrappers.length > 0) {
-            combinedStats += '<h2>Statistiques pour ' + browser + '</h2>';
-            countWrappers.each((i, el) => {
-            // Ajoute le HTML de chaque div count-wrapper trouvée
-            combinedStats += '<div>' + $(el).html() + '</div>';
-            });
-            }
-          });
-            
-            // Écrit les statistiques dans un fichier qui sera utilisé par l'étape d'envoi d'email
-            fs.writeFileSync('./reports/stats-summary.html', combinedStats);
-            
-            // Si aucune stat n'a été trouvée
-            if (combinedStats === '') {
-              combinedStats = '<p>Aucune statistique trouvée dans les rapports.</p>';
-            }
-            
-            // Pour GitHub Actions, définit une variable de sortie
-            if (process.env.GITHUB_OUTPUT) {
-              fs.appendFileSync(process.env.GITHUB_OUTPUT, 
-                `stats<<EOF\n${combinedStats}\nEOF\n`);
-            }
-            "      
+        run: node ./extract-stats.js
           
       - name: Send email with the test report
         if: always()  # Cette étape sera exécutée même si les tests échouent
@@ -149,11 +105,11 @@ jobs:
           from: ${{ secrets.GMAIL_USERNAME }}  # L'expéditeur doit être la même adresse que username
           body: "Les tests automatisés ont été exécutés. Veuillez consulter les rapports en pièce jointe."
           html_body: |
-            <h1>Résultats des Tests Automatisés</h1>
-            <p>Bonjour,</p>
-            <p>Les tests Cucumber ont été exécutés dans l'environnement CI. Vous trouverez les rapports détaillés en pièce jointe.</p>
-            <p>Statut du build: ${{ job.status }}</p>
-            <p>Voir les détails complets dans <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">le workflow GitHub</a>.</p>
-            <p>Cordialement,<br>Votre système CI</p>
+              <h1>Résultats des Tests Automatisés</h1>
+              <p>Les tests Cucumber ont été exécutés dans l'environnement CI.</p>
+      
+              <div class="statistics-summary">
+              ${{ steps.extract-stats.outputs.stats }}
+              </div>
           attachments: ./reports/cucumber_report_*.html,./reports/cucumber_report_*.json
           priority: high
