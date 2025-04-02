@@ -86,20 +86,21 @@ jobs:
         if: always()  # Cette étape sera exécutée même si les tests échouent
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: smtp.mail.yahoo.com
+          server_address: smtp.gmail.com
           server_port: 465
-          username: ${{ secrets.YAHOO_EMAIL }}
-          password: ${{ secrets.YAHOO_PASSWORD }}
+          username: ${{ secrets.GMAIL_USERNAME }}  # Votre adresse Gmail
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}  # Mot de passe d'application, pas votre mot de passe Gmail normal
           secure: true
-          subject: "CI Build Result"
-          to: delplanquecyr@yahoo.fr
-          from: ${{ secrets.YAHOO_EMAIL }}
-          body: "Le test a été effectué. Voir les résultats ci-joints."
-          html_body: "<h1>Résultats du test</h1><p>Voir les détails ci-dessous...</p>"
-          cc: ""
-          bcc: ""
-          # Ajoutez cette ligne pour inclure vos rapports de test
+          subject: "Résultats des Tests Cucumber CI"
+          to: delplanquecyr@yahoo.fr  # Destinataire
+          from: ${{ secrets.GMAIL_USERNAME }}  # L'expéditeur doit être la même adresse que username
+          body: "Les tests automatisés ont été exécutés. Veuillez consulter les rapports en pièce jointe."
+          html_body: |
+            <h1>Résultats des Tests Automatisés</h1>
+            <p>Bonjour,</p>
+            <p>Les tests Cucumber ont été exécutés dans l'environnement CI. Vous trouverez les rapports détaillés en pièce jointe.</p>
+            <p>Statut du build: ${{ job.status }}</p>
+            <p>Voir les détails complets dans <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">le workflow GitHub</a>.</p>
+            <p>Cordialement,<br>Votre système CI</p>
           attachments: ./reports/cucumber_report_*.html,./reports/cucumber_report_*.json
-          # Si vous souhaitez inclure d'autres informations
-          ignore_cert: true  # Optionnel: peut aider avec certains problèmes de certificat
-          priority: high      # Optionnel: définit la priorité de l'email
+          priority: high
