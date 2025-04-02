@@ -44,6 +44,7 @@ export class LoginPage extends BasePage {
          * @returns {Promise<void>} 
          */
         async controlEntirePage(numberOfDiffPixelRatio:number):Promise<void>{
+            console.log("Start control screenshot");
             await this.loginButton.waitFor(); //wait button is displayed
             const browserName = process.env.BROWSER; //catch the browser name as image may vary versus browser
             const headless = process.env.HEADLESS;

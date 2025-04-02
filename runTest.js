@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 const isWindows = process.platform === "win32";
 
 // Browser List
@@ -7,7 +7,6 @@ const browsers = ['chromium', 'firefox', 'webkit'];
 // If Browser is defined, we launch specified browser else we launch all browser
 const browserEnv = process.env.BROWSER;
 const browsersToTest = browserEnv ? [browserEnv] : browsers;
-
 
 const args = process.argv.slice(2);  //  catch arguments
 const tagArgIndex = args.indexOf('tags');
@@ -23,29 +22,47 @@ const runTestsForBrowser = (browser) => {
   return new Promise((resolve, reject) => {
     console.log(`🚀 Launch test on ${browser}...`);
 
-    // Command to launch 
-    let command = isWindows 
-      ? `cross-env BROWSER=${browser} cucumber-js --format json:reports/cucumber_report_${browser}.json --format progress`
-      : `BROWSER=${browser} cucumber-js --format json:reports/cucumber_report_${browser}.json --format progress`;
-
+    // Command and arguments preparation
+    let command = isWindows ? 'cross-env' : 'cucumber-js';
+    let args = [];
+    
+    if (isWindows) {
+      args.push(`BROWSER=${browser}`);
+      args.push('cucumber-js');
+    } else {
+      // Set environment variable for non-Windows
+      process.env.BROWSER = browser;
+    }
+    
+    args.push('--format', `json:reports/cucumber_report_${browser}.json`);
+    args.push('--format', 'progress');
+    args.push('--publish');
+    
     // Add the tag to command
     if (tagFilter) {
-      command += ` --tags ${tagFilter}`;
+      args.push('--tags', tagFilter);
     }
 
+    console.log(`Executing: ${command} ${args.join(' ')}`);
 
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`❌ Error on ${browser}: ${stderr}`);
-        reject(`Error on ${browser}: ${stderr}`);
+    // Use spawn instead of exec to pipe output in real-time
+    const childProcess = spawn(command, args, { 
+      stdio: 'inherit', // This is key to see logs in real-time
+      shell: true,
+      env: { ...process.env }
+    });
+
+    childProcess.on('close', (code) => {
+      if (code !== 0) {
+        console.error(`❌ Process for ${browser} exited with code ${code}`);
+        reject(`Error on ${browser}: Process exited with code ${code}`);
       } else {
-        console.log(stdout);
+        console.log(`✅ Tests completed successfully on ${browser}`);
         resolve(browser);
       }
     });
   });
 };
-
 
 /**
  * Generate the report
@@ -59,8 +76,6 @@ const generateReports = (browser, isTestPassed) => {
   reportGenerator(browser, isTestPassed);
 };
 
-
-
 /**
  * To execute Test
  *
@@ -71,6 +86,7 @@ const runTests = async () => {
   const queue = [...browsersToTest]; // Browser list to test
   const runningTests = []; // Test List on going
   const max_number_of_browser_in_parallel = 1;
+  
   while (queue.length > 0 || runningTests.length > 0) {
     while (runningTests.length < max_number_of_browser_in_parallel && queue.length > 0) {
       const browser = queue.shift();
@@ -83,16 +99,20 @@ const runTests = async () => {
           generateReports(browser, false);
         })
         .finally(() => {
-          runningTests.splice(runningTests.indexOf(testPromise), 1);
+          const index = runningTests.indexOf(testPromise);
+          if (index !== -1) {
+            runningTests.splice(index, 1);
+          }
         });
 
       runningTests.push(testPromise);
     }
 
-    // Wait a running test is finished before launch a new one
-    await Promise.race(runningTests);
+    // Wait until a running test is finished before launching a new one
+    if (runningTests.length > 0) {
+      await Promise.race(runningTests);
+    }
   }
-
 };
 
 // Launch Test

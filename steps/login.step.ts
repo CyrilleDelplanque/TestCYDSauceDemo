@@ -68,6 +68,12 @@ Before(async function (this: IWorld, scenario:any) {
             }
         });
     }
+
+    console.log = ((originalLog) => (...args) => {
+        this.consoleLogs.push(args.join(' ')); // Stocker le log dans this.consoleLogs
+        originalLog.apply(console, args); // Afficher le log dans le terminal
+    })(console.log);
+    
     this.page.setViewportSize({ width: 1280, height: 720 });
 });
 
@@ -75,6 +81,7 @@ Given("I am on saucedemo website", async function (){
     const loginPage = new LoginPage(this.page as Page);
     await loginPage.navigateTo();
     await loginPage.controlEntirePage(0);
+
 });
 
 
