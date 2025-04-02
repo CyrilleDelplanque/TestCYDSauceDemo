@@ -59,12 +59,12 @@ jobs:
       # Run tests (Cucumber and Playwright tests)
       - name: Run tests
         run: |
-          if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+          if [ "$OSTYPE" == "linux-gnu" ]; then
               export HEADLESS=true
               echo "Running on Linux, HEADLESS=true"
-          elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+          elif [ -n "$WINDIR" ]; then
               echo "Running on Windows, HEADLESS=true"
-              echo "##vso[task.setvariable variable=HEADLESS]true"  # Cette syntaxe est spécifique à Azure DevOps si tu veux l'utiliser
+              echo "##vso[task.setvariable variable=HEADLESS]true"  # Pour Azure DevOps si besoin
           else
               echo "Unknown OS, please specify HEADLESS manually"
           fi
