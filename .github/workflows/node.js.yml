@@ -68,5 +68,8 @@ jobs:
           subject: 'CI Workflow Report'
           body: 'The CI workflow has completed. Please find the details of the report below.'
           attachments: 'reports/cucumber_report_chromium.html'  # Spécifiez le chemin du fichier de rapport
-          smtp-server: 'smtp.sendgrid.net'
-          smtp-username: 'apikey'
+          smtp-server: 'smtp.mail.yahoo.com'
+          smtp-username: ${{ secrets.YAHOO_EMAIL }}
+          smtp-password: ${{ secrets.YAHOO_APP_PASSWORD }}
+          smtp-port: 587  # Port standard pour SMTP via Yahoo
+          smtp-secure: true  # Utilisation de la sécurité TLS
