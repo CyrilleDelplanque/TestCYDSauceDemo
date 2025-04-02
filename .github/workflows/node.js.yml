@@ -59,7 +59,7 @@ jobs:
       # Run tests (Cucumber and Playwright tests)
       - name: Run tests
         run: |
-          npm run test
+          $env:HEADLESS="true"; npm test
 
       # Liste des fichiers dans le répertoire de rapports pour déboguer
       - name: List files in reports directory
