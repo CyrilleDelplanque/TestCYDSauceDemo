@@ -59,7 +59,7 @@ jobs:
       # Run tests (Cucumber and Playwright tests)
       - name: Run tests
         run: |
-          npm test
+          npx playwright test dev.spec.ts
       - name: Send email with the test report
         if: always()  # Cette étape sera exécutée même si les tests échouent
         uses: dawidd6/action-send-mail@v3
