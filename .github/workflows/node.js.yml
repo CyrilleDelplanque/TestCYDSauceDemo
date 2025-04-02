@@ -64,13 +64,15 @@ jobs:
         if: always()  # Cette étape sera exécutée même si les tests échouent
         uses: dawidd6/action-send-mail@v3
         with:
-          from: 'delplanquecyr@yahoo.fr'
-          to: 'delplanquecyr@yahoo.fr'
-          subject: 'CI Workflow Report'
-          body: 'The CI workflow has completed. Please find the details of the report below.'
-          attachments: 'reports/cucumber_report_chromium.html'  # Spécifiez le chemin du fichier de rapport
-          smtp-server: 'smtp.mail.yahoo.com'
-          smtp-username: ${{ secrets.YAHOO_EMAIL }}
-          smtp-password: ${{ secrets.YAHOO_APP_PASSWORD }}
-          smtp-port: 587  # Port standard pour SMTP via Yahoo
-          smtp-secure: true  # Utilisation de la sécurité TLS
+          server_address: smtp.mail.yahoo.com  # Serveur SMTP de Yahoo
+          server_port: 465  # Port SMTP pour Yahoo (465 pour SSL, ou 587 pour TLS)
+          username: ${{ secrets.YAHOO_EMAIL }}  # Utilisez un secret pour stocker votre email
+          password: ${{ secrets.YAHOO_PASSWORD }}  # Utilisez un secret pour stocker votre mot de passe
+          secure: true  # Utilisez true pour activer la sécurité (SSL/TLS)
+          subject: "CI Build Result"
+          to: delplanquecyr@yahoo.fr  # Adresse email du destinataire
+          from: ${{ secrets.YAHOO_EMAIL }}  # Utilisez votre email Yahoo comme expéditeur
+          body: "Le test a été effectué. Voir les résultats ci-joints."
+          html_body: "<h1>Résultats du test</h1><p>Voir les détails ci-dessous...</p>"
+          cc: ""  # Optionnel : adresse email en copie
+          bcc: ""  # Optionnel : adresse email en copie cachée
