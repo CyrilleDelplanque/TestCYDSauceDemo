@@ -76,10 +76,6 @@ jobs:
           echo "HEADLESS=$HEADLESS"
           npm test
 
-      # Liste des fichiers dans le répertoire de rapports pour déboguer
-      - name: List files in reports directory
-        run: ls -al reports/
-
       # Step: Save reports as an artifact
       - name: Upload Cucumber HTML Report as artifact
         uses: actions/upload-artifact@v4
