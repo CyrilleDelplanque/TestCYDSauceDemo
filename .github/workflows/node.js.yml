@@ -89,7 +89,7 @@ jobs:
 
       - name: Extract report statistics
         id: extract-stats
-        run: node ./extract-stats.js
+        run: node ./utils/extract-stats.js
           
       - name: Send email with the test report
         if: always()  # Cette étape sera exécutée même si les tests échouent
