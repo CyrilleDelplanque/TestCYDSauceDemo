@@ -47,6 +47,9 @@ jobs:
         run: |
           npx playwright install --with-deps
 
+      - name: Install required packages
+        run: npm install glob cheerio
+
       # Install Cucumber and related packages
       - name: Install Cucumber and Playwright-related packages
         run: |
@@ -58,13 +61,15 @@ jobs:
 
       # Run tests (Cucumber and Playwright tests)
       - name: Run tests
+        shell: bash
         run: |
           if [ "$OSTYPE" == "linux-gnu" ]; then
               export HEADLESS=true
               echo "Running on Linux, HEADLESS=true"
           elif [ -n "$WINDIR" ]; then
               echo "Running on Windows, HEADLESS=true"
-              echo "##vso[task.setvariable variable=HEADLESS]true"  # Pour Azure DevOps si besoin
+              export HEADLESS=true
+              echo "HEADLESS=true" >> $GITHUB_ENV
           else
               echo "Unknown OS, please specify HEADLESS manually"
           fi
@@ -81,6 +86,54 @@ jobs:
         with:
           name: cucumber-reports  # Nom de l'artefact
           path: reports/cucumber_report_*.html  # Chemin du fichier généré
+
+      - name: Extract report statistics
+        id: extract-stats
+        run: |
+          node -e "
+          const fs = require('fs');
+          const glob = require('glob');
+          const cheerio = require('cheerio');
+            
+          // Recherche tous les fichiers de rapport HTML
+          const reportFiles = glob.sync('./reports/cucumber_report_*.html');
+            
+          let combinedStats = '';
+            
+          // Pour chaque fichier de rapport
+          reportFiles.forEach(file => {
+            const browser = file.match(/cucumber_report_(.+)\.html/)[1];
+            const htmlContent = fs.readFileSync(file, 'utf8');
+              
+          // Utilise cheerio (version Node.js de jQuery) pour analyser le HTML
+            const $ = cheerio.load(htmlContent);
+              
+          // Trouve toutes les divs dont la classe commence par 'count-wrapper'
+            const countWrappers = $('div[class^=\"count-wrapper\"]');
+              
+          if (countWrappers.length > 0) {
+            combinedStats += '<h2>Statistiques pour ' + browser + '</h2>';
+            countWrappers.each((i, el) => {
+            // Ajoute le HTML de chaque div count-wrapper trouvée
+            combinedStats += '<div>' + $(el).html() + '</div>';
+            });
+            }
+          });
+            
+            // Écrit les statistiques dans un fichier qui sera utilisé par l'étape d'envoi d'email
+            fs.writeFileSync('./reports/stats-summary.html', combinedStats);
+            
+            // Si aucune stat n'a été trouvée
+            if (combinedStats === '') {
+              combinedStats = '<p>Aucune statistique trouvée dans les rapports.</p>';
+            }
+            
+            // Pour GitHub Actions, définit une variable de sortie
+            if (process.env.GITHUB_OUTPUT) {
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 
+                `stats<<EOF\n${combinedStats}\nEOF\n`);
+            }
+            "      
           
       - name: Send email with the test report
         if: always()  # Cette étape sera exécutée même si les tests échouent
