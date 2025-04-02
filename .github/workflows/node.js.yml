@@ -60,3 +60,13 @@ jobs:
       - name: Run tests
         run: |
           npm test
+      - name: Send email with the test report
+        if: always()  # Cette étape sera exécutée même si les tests échouent
+        uses: peter-evans/send-email@v2
+        with:
+          to: 'your-email@example.com'
+          subject: 'CI Workflow Report'
+          body: 'The CI workflow has completed. Please find the details of the report below.'
+          attachments: 'reports/cucumber_report_chromium.html'  # Spécifiez le chemin du fichier de rapport
+          smtp-server: 'smtp.sendgrid.net'
+          smtp-username: 'apikey'
