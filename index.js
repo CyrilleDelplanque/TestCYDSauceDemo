@@ -60,7 +60,7 @@ module.exports = async function(browser) {
         const options = {
           theme: 'bootstrap',
           jsonFile: jsonFilePath,
-          output: path.join(reportsDir, `cucumber_report_${os}_${browser}_${currentDate}.html`),
+          output: path.join(reportsDir, `cucumber_report_${osName}_${browser}_${currentDate}.html`),
           reportSuiteAsScenarios: true,
           scenarioTimestamp: true,
           screenshotsDirectory: 'screenshots/',
@@ -79,7 +79,7 @@ module.exports = async function(browser) {
         };
 
         reporter.generate(options);
-        console.log(` HTML report for ${browser} generated : cucumber_report_${os}_${browser}_${currentDate}.html`);
+        console.log(` HTML report for ${browser} generated : cucumber_report_${osName}_${browser}_${currentDate}.html`);
       }
     } catch (error) {
       console.error('Issue while generating HTML report :', error);
