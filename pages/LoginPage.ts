@@ -44,11 +44,18 @@ export class LoginPage extends BasePage {
          * @returns {Promise<void>} 
          */
         async controlEntirePage(numberOfDiffPixelRatio:number):Promise<void>{
-            console.log("Start control screenshot");
             await this.loginButton.waitFor(); //wait button is displayed
+            let osName = 'unknown';
+            if (process.platform === 'win32') {
+            osName = 'windows';
+            } else if (process.platform === 'darwin') {
+            osName = 'macos';
+            } else if (process.platform === 'linux') {
+            osName = 'linux';
+            }
             const browserName = process.env.BROWSER; //catch the browser name as image may vary versus browser
             const headless = process.env.HEADLESS;
-            const imagePath = `./logo_ref/Login_page_${browserName}_headless_${headless}.png`; //path to the image reference
+            const imagePath = `./logo_ref/Login_page_${osName}_${browserName}_headless_${headless}.png`; //path to the image reference
         
         const pixelDiff = await this.getPixelDiff(imagePath, this.page);
         try {

@@ -80,8 +80,10 @@ jobs:
       - name: Upload Cucumber HTML Report as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cucumber-reports  # Nom de l'artefact
-          path: reports/cucumber_report_*.html  # Chemin du fichier généré
+          name: cucumber-reports-${{ runner.os }}  # Nom de l'artefact
+          path: |
+                reports/cucumber_report_*.html  # Chemin du fichier généré
+                screenshots/*.png
 
       - name: Extract report statistics
         id: extract-stats
