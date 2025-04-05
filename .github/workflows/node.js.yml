@@ -82,8 +82,8 @@ jobs:
         with:
           name: cucumber-reports-${{ runner.os }}  # Nom de l'artefact
           path: |
-                reports/cucumber_report_*.html  # Chemin du fichier généré
-                screenshots/*.png
+                ./reports/cucumber_report_*.html  # Chemin du fichier généré
+                # screenshots/*.png
 
       - name: Extract report statistics
         id: extract-stats
@@ -109,5 +109,5 @@ jobs:
               <div class="statistics-summary">
               ${{ steps.extract-stats.outputs.stats }}
               </div>
-          attachments: ./reports/cucumber_report_*.html,./reports/cucumber_report_*.json
+          attachments: ./reports/cucumber_report_*.html #,./reports/cucumber_report_*.json
           priority: high
