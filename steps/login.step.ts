@@ -73,7 +73,7 @@ Before(async function (this: IWorld, scenario:any) {
         this.consoleLogs.push(args.join(' ')); // Stocker le log dans this.consoleLogs
         originalLog.apply(console, args); // Afficher le log dans le terminal
     })(console.log);
-    
+
     this.page.setViewportSize({ width: 1280, height: 720 });
 });
 
@@ -123,7 +123,7 @@ Then("I am logged as {string}", async function (user:string) {
 Then("I am back to Login Page", async function () {
     await this.page.waitForLoadState('load');
     const loginPage = new LoginPage(this.page as Page);
-    await loginPage.controlEntirePage(0);
+    await loginPage.controlEntirePage(0,this);
 });
 
 AfterStep(async function (step: ITestCaseHookParameter) {

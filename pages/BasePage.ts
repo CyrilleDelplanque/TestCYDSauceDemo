@@ -2,7 +2,7 @@ import {Page, Locator, expect}   from '@playwright/test' //use for playwright
 import { World,ITestCaseHookParameter } from '@cucumber/cucumber'; //use by cucumber
 import {PNG} from 'pngjs'; //use for image comparison
 import pixelmatch from 'pixelmatch'; //use for image comparison
-import { existsSync,readFileSync } from 'fs'; //use for file management
+import { existsSync,readFileSync,writeFileSync } from 'fs'; //use for file management
 
 
 /**
@@ -76,22 +76,53 @@ export class BasePage {
                   }
         }
            
+   
     /**
      * compare reference image to a screenshot taken of a locator
-     * 
+     *
      * @async
      * @param {string} expectedImagePath 
      * @param {(Locator | Page)} objectToScreenshot 
-     * @returns {Promise<number>} 
+     * @param {?string} [diffOutputPath] 
+     * @returns {Promise<{diffCount: number, diffImagePath?: string}>} 
      */
-    async getPixelDiff(expectedImagePath: string, objectToScreenshot:Locator | Page): Promise<number> 
-        {
-          const actualImage = PNG.sync.read(await objectToScreenshot.screenshot()); //take the screenshot of the locator
-          const expectedImage = PNG.sync.read(readFileSync(expectedImagePath)); //read the reference image
-          const { width, height } = actualImage; //read the height and width from the screenshot taken
-          const diff = new PNG({ height, width }); //create a empty png file with height of height and width of width
-          return pixelmatch(actualImage.data, expectedImage.data, diff.data, width, height); //launch function pixelmatch
+    async getPixelDiff(expectedImagePath: string, objectToScreenshot: Locator | Page, diffOutputPath?: string): Promise<{diffCount: number, diffImagePath?: string}> {
+      // Prendre la capture d'écran de l'élément
+      const actualImage = PNG.sync.read(await objectToScreenshot.screenshot());
+      
+      // Lire l'image de référence
+      const expectedImage = PNG.sync.read(readFileSync(expectedImagePath));
+      
+      // Récupérer les dimensions
+      const { width, height } = actualImage;
+      
+      // Créer un PNG vide pour stocker les différences
+      const diff = new PNG({ height, width });
+      
+      // Calculer les différences
+      const diffCount = pixelmatch(
+        actualImage.data, 
+        expectedImage.data, 
+        diff.data, 
+        width, 
+        height, 
+        { threshold: 0.1, // Vous pouvez ajuster ce seuil
+          diffColor: [255, 0, 0], // Couleur rouge pour les différences
+          diffMask: false // true pour créer un masque au lieu de superposer
         }
+      );
+      
+      // Si des différences sont détectées et qu'un chemin de sortie est fourni
+      if (diffCount > 0 && diffOutputPath) {
+        // Écrire l'image des différences
+        const buffer = PNG.sync.write(diff);
+        writeFileSync(diffOutputPath, buffer);
+        
+        return { diffCount, diffImagePath: diffOutputPath };
+      }
+      
+      return { diffCount };
+    }
    
     /**
      * take a screenshot of the page

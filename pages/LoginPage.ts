@@ -43,7 +43,7 @@ export class LoginPage extends BasePage {
          * @param {number} numberOfDiffPixelRatio - is the ratio of accepted bad pixel versus image reference
          * @returns {Promise<void>} 
          */
-        async controlEntirePage(numberOfDiffPixelRatio:number):Promise<void>{
+        async controlEntirePage(numberOfDiffPixelRatio:number, world?: any):Promise<void>{
             await this.loginButton.waitFor(); //wait button is displayed
             let osName = 'unknown';
             if (process.platform === 'win32') {
@@ -57,10 +57,15 @@ export class LoginPage extends BasePage {
             const headless = process.env.HEADLESS;
             const imagePath = `./logo_ref/Login_page_${osName}_${browserName}_headless_${headless}.png`; //path to the image reference
         
-        const pixelDiff = await this.getPixelDiff(imagePath, this.page);
+        const pixelDiff = await this.getPixelDiff(imagePath, this.page,'output/diff_image.png');
         try {
-            expect(pixelDiff).toBeLessThanOrEqual(numberOfDiffPixelRatio);
+            expect(pixelDiff.diffCount).toBeLessThanOrEqual(numberOfDiffPixelRatio);
             } catch (error) {
+                console.log(`Image avec les différences sauvegardée à: ${pixelDiff.diffImagePath}`);
+                if (world && pixelDiff.diffImagePath) {
+                    const diffImageBuffer = readFileSync(pixelDiff.diffImagePath);
+                    world.attach(diffImageBuffer, 'image/png');
+                }
                 throw new Error(`❌ Image ${imagePath} is not conform to reference. Pixel différence: ${pixelDiff} over the target of ${numberOfDiffPixelRatio}. ${error}`);
               }
         }
