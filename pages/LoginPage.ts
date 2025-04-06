@@ -57,7 +57,7 @@ export class LoginPage extends BasePage {
             const headless = process.env.HEADLESS;
             const imagePath = `./logo_ref/Login_page_${osName}_${browserName}_headless_${headless}.png`; //path to the image reference
         
-        const pixelDiff = await this.getPixelDiff(imagePath, this.page,'output/diff_image.png');
+        const pixelDiff = await this.getPixelDiff(imagePath, this.page,'diff_image.png');
         try {
             expect(pixelDiff.diffCount).toBeLessThanOrEqual(numberOfDiffPixelRatio);
             } catch (error) {
