@@ -62,6 +62,7 @@ module.exports = async function(browser) {
           jsonFile: jsonFilePath,
           output: path.join(reportsDir, `cucumber_report_${osName}_${browser}_${currentDate}.html`),
           reportSuiteAsScenarios: true,
+          expandAllSteps: true, // to expend data in report
           scenarioTimestamp: true,
           screenshotsDirectory: 'screenshots/',
           storeScreenshots: true,
