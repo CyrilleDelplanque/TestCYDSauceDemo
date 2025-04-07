@@ -1,6 +1,8 @@
 import { Page, Locator, expect}   from '@playwright/test'
 import { BasePage } from './BasePage';
 import { readFileSync,existsSync } from "fs";
+import path = require('path');
+
 
 
 /**
@@ -88,8 +90,16 @@ export class LoginPage extends BasePage {
                 console.log(`world.attach est une fonction: ${typeof world.attach === 'function'}`);
                 
                 const base64Image = diffImageBuffer.toString('base64');
-                world.attach(`<img src="data:image/png;base64,${base64Image}" />`, 'text/html');
-                // world.attach(diffImageBuffer, {contentType: 'image/png', fileName: fileNameLive});
+                const imageTitle = `Différence d'image: ${pixelDiff.diffCount} pixels différents`;
+
+                world.attach(
+                `<div style="text-align: center; margin: 10px 0;">
+                    <h3 style="color: #d9534f; margin-bottom: 5px;">${imageTitle}</h3>
+                    <img src="data:image/png;base64,${base64Image}" alt="Image différence" style="border: 1px solid #ddd; max-width: 100%;" />
+                    <p style="font-style: italic; margin-top: 5px;">Comparaison avec la référence: ${path.basename(imagePath)}</p>
+                </div>`, 
+                'text/html'
+                );
                 console.log("Image attachée avec succès");
             } catch (attachError) {
                 console.error(`Erreur lors de l'attachement de l'image: ${attachError}`);
