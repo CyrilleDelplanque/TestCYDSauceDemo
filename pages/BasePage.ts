@@ -2,7 +2,8 @@ import {Page, Locator, expect}   from '@playwright/test' //use for playwright
 import { World,ITestCaseHookParameter } from '@cucumber/cucumber'; //use by cucumber
 import {PNG} from 'pngjs'; //use for image comparison
 import pixelmatch from 'pixelmatch'; //use for image comparison
-import { existsSync,readFileSync,writeFileSync } from 'fs'; //use for file management
+import { existsSync,readFileSync,writeFileSync,mkdirSync } from 'fs'; //use for file management
+import { dirname } from 'path';
 
 
 /**
@@ -111,15 +112,24 @@ export class BasePage {
           diffMask: false // true pour créer un masque au lieu de superposer
         }
       );
+
+      if (diffOutputPath) {
+        // Créer le répertoire de sortie s'il n'existe pas
+        const outputDir = dirname(diffOutputPath);
+        if (!existsSync(outputDir)) {
+          mkdirSync(outputDir, { recursive: true });
+        }
+        
       
-      // Si des différences sont détectées et qu'un chemin de sortie est fourni
-      if (diffCount > 0 && diffOutputPath) {
+      // Si des différences sont détectées 
+      if (diffCount > 0) {
         // Écrire l'image des différences
         const buffer = PNG.sync.write(diff);
         writeFileSync(diffOutputPath, buffer);
         
         return { diffCount, diffImagePath: diffOutputPath };
       }
+    }
       
       return { diffCount };
     }
