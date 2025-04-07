@@ -88,7 +88,7 @@ export class LoginPage extends BasePage {
                 console.log(`world.attach est une fonction: ${typeof world.attach === 'function'}`);
                 
                 const base64Image = diffImageBuffer.toString('base64');
-                world.attach(base64Image, 'image/png;base64');
+                world.attach(`<img src="data:image/png;base64,${base64Image}" />`, 'text/html');
                 // world.attach(diffImageBuffer, {contentType: 'image/png', fileName: fileNameLive});
                 console.log("Image attachée avec succès");
             } catch (attachError) {
