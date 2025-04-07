@@ -58,29 +58,46 @@ export class LoginPage extends BasePage {
             const imagePath = `./logo_ref/Login_page_${osName}_${browserName}_headless_${headless}.png`; //path to the image reference
         
             const fileNameLive = `diff_image_${new Date().getTime()}.png`;
-            const diffOutputPath = `./output/${fileNameLive}`;
-            const pixelDiff = await this.getPixelDiff(imagePath, this.page, diffOutputPath);
-            
+    const diffOutputPath = `./output/${fileNameLive}`;
+    console.log(`Chemin de sortie de l'image diff: ${diffOutputPath}`);
+    
+    console.log("Avant getPixelDiff");
+    const pixelDiff = await this.getPixelDiff(imagePath, this.page, diffOutputPath);
+    console.log(`Après getPixelDiff: diffCount=${pixelDiff.diffCount}, diffImagePath=${pixelDiff.diffImagePath}`);
+    
+    try {
+        console.log(`Vérification: ${pixelDiff.diffCount} <= ${numberOfDiffPixelRatio}`);
+        expect(pixelDiff.diffCount).toBeLessThanOrEqual(numberOfDiffPixelRatio);
+        console.log("Test réussi - pas de différence");
+    } catch (error) {
+        console.log("Test échoué - différence détectée");
+        console.log(`World existe: ${!!world}`);
+        console.log(`DiffImagePath existe: ${!!pixelDiff.diffImagePath}`);
+        
+        if (pixelDiff.diffImagePath) {
+            console.log(`Fichier existe: ${existsSync(pixelDiff.diffImagePath)}`);
+        }
+        
+        if (world && pixelDiff.diffImagePath && existsSync(pixelDiff.diffImagePath)) {
+            console.log("Conditions remplies pour attacher l'image");
             try {
-                expect(pixelDiff.diffCount).toBeLessThanOrEqual(numberOfDiffPixelRatio);
-            } catch (error) {
-                // Assurez-vous que l'image existe
-                if (world && pixelDiff.diffImagePath && existsSync(pixelDiff.diffImagePath)) {
-                    try {
-                        // Lire l'image comme Buffer
-                        const diffImageBuffer = readFileSync(pixelDiff.diffImagePath);
-                        
-                        // Attacher l'image avec le bon MIME type
-                        world.attach(diffImageBuffer, {contentType: 'image/png', fileName: fileNameLive});
-                        
-                        console.log(`Image avec les différences sauvegardée et attachée: ${pixelDiff.diffImagePath}`);
-                    } catch (attachError) {
-                        console.error(`Erreur lors de l'attachement de l'image: ${attachError}`);
-                    }
-                }
+                const diffImageBuffer = readFileSync(pixelDiff.diffImagePath);
+                console.log("Image lue avec succès");
                 
-                throw new Error(`❌ Image ${imagePath} is not conform to reference. Pixel différence: ${pixelDiff.diffCount} over the target of ${numberOfDiffPixelRatio}. ${error}`);
+                // Vérifier si world.attach est une fonction
+                console.log(`world.attach est une fonction: ${typeof world.attach === 'function'}`);
+                
+                world.attach(diffImageBuffer, {contentType: 'image/png', fileName: fileNameLive});
+                console.log("Image attachée avec succès");
+            } catch (attachError) {
+                console.error(`Erreur lors de l'attachement de l'image: ${attachError}`);
             }
+        } else {
+            console.log("Conditions non remplies pour attacher l'image");
+        }
+        
+        throw new Error(`❌ Image ${imagePath} is not conform to reference. Pixel différence: ${pixelDiff.diffCount} over the target of ${numberOfDiffPixelRatio}. ${error}`);
+    }
         }
 
         
