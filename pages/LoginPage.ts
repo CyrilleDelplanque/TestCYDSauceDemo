@@ -57,19 +57,26 @@ export class LoginPage extends BasePage {
             const headless = process.env.HEADLESS;
             const imagePath = `./logo_ref/Login_page_${osName}_${browserName}_headless_${headless}.png`; //path to the image reference
         
-            const diffOutputPath = `./output/diff_image_${new Date().getTime()}.png`;
+            const fileNameLive = `diff_image_${new Date().getTime()}.png`;
+            const diffOutputPath = `./output/${fileNameLive}`;
             const pixelDiff = await this.getPixelDiff(imagePath, this.page, diffOutputPath);
             
             try {
                 expect(pixelDiff.diffCount).toBeLessThanOrEqual(numberOfDiffPixelRatio);
             } catch (error) {
                 // Assurez-vous que l'image existe
-                if (pixelDiff.diffImagePath && existsSync(pixelDiff.diffImagePath)) {
-                    // Attachez l'image au rapport world
-                    // Vous devez avoir accès à l'objet world ici
-                    const diffImageBuffer = readFileSync(pixelDiff.diffImagePath);
-                    world.attach(diffImageBuffer, 'image/png');
-                    console.log(`Image avec les différences sauvegardée à: ${pixelDiff.diffImagePath}`);
+                if (world && pixelDiff.diffImagePath && existsSync(pixelDiff.diffImagePath)) {
+                    try {
+                        // Lire l'image comme Buffer
+                        const diffImageBuffer = readFileSync(pixelDiff.diffImagePath);
+                        
+                        // Attacher l'image avec le bon MIME type
+                        world.attach(diffImageBuffer, {contentType: 'image/png', fileName: fileNameLive});
+                        
+                        console.log(`Image avec les différences sauvegardée et attachée: ${pixelDiff.diffImagePath}`);
+                    } catch (attachError) {
+                        console.error(`Erreur lors de l'attachement de l'image: ${attachError}`);
+                    }
                 }
                 
                 throw new Error(`❌ Image ${imagePath} is not conform to reference. Pixel différence: ${pixelDiff.diffCount} over the target of ${numberOfDiffPixelRatio}. ${error}`);
