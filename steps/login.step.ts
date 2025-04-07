@@ -80,7 +80,7 @@ Before(async function (this: IWorld, scenario:any) {
 Given("I am on saucedemo website", async function (){
     const loginPage = new LoginPage(this.page as Page);
     await loginPage.navigateTo();
-    await loginPage.controlEntirePage(0);
+    await loginPage.controlEntirePage(0,this);
 
 });
 
