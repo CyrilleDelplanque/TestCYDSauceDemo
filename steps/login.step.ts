@@ -22,6 +22,7 @@ Before(async function (this: IWorld, scenario:any) {
     const browserName = process.env.BROWSER || 'chromium';
 
     console.log(`🚀 Browser launch: ${browserName}`);
+    console.log(`New Version`);
 
     if (browserName === 'chromium') {
         browser = await chromium.launch(options);
