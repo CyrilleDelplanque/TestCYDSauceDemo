@@ -324,7 +324,7 @@ export class ProductsPage extends BasePage {
     async confirmItemIsCorrect(itemTitle: string):Promise<void>
     {
         const item = await this.selectProductByTitle(itemTitle);
-        console.log("Product selected by title ")
+        console.log("Product selected by title  ")
         try
         {
             expect (this.itemsData[itemTitle].deScription).toStrictEqual(await item.locator(this.refProductsPageData.inventoryItemDescription).textContent())
